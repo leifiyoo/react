@@ -1,13 +1,19 @@
-import React from "react";
+import React, { useState } from "react";
 import logo from "./logo.svg";
 import "./App.css";
+import PasswordGate from "./components/PasswordGate";
 
 /**
- * Uses Tailwind CSS for styling
- * Tailwind file is imported in App.css
+ * Uses Tailwind CSS and shadcn/ui components for styling.
  */
 
 export default function App() {
+  const [unlocked, setUnlocked] = useState(false);
+
+  if (!unlocked) {
+    return <PasswordGate onUnlock={() => setUnlocked(true)} />;
+  }
+
   return (
     <div className="app min-h-screen text-blue-200 flex items-center flex-col p-20">
       <div className="mb-10 grid grid-cols-4 grid-rows-2 w-1/2 mx-auto">
@@ -30,11 +36,11 @@ export default function App() {
       </h1>
 
       <div className="grid grid-cols-2 grid-rows-2 gap-4">
-        <Button
+        <NavButton
           text="DigitalOcean Docs"
           url="https://www.digitalocean.com/docs/app-platform"
         />
-        <Button
+        <NavButton
           text="DigitalOcean Dashboard"
           url="https://cloud.digitalocean.com/apps"
         />
@@ -43,7 +49,7 @@ export default function App() {
   );
 }
 
-function Button({ className, text, url = "#" }) {
+function NavButton({ className, text, url = "#" }) {
   return (
     <a
       href={url}
