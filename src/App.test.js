@@ -20,6 +20,6 @@ test("shows error near action for invalid credentials", () => {
   });
   fireEvent.click(screen.getByRole("button", { name: /sign in/i }));
   expect(
-    screen.getByText(/incorrect password\. please try again\./i)
+    screen.getByText(/invalid email or password\. please try again\./i)
   ).toBeInTheDocument();
 });

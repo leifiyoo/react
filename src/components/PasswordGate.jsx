@@ -33,7 +33,7 @@ export default function PasswordGate({ onUnlock }) {
       setError("");
       onUnlock();
     } else {
-      setError("Incorrect password. Please try again.");
+      setError("Invalid email or password. Please try again.");
       setPassword("");
     }
   }
@@ -125,7 +125,10 @@ export default function PasswordGate({ onUnlock }) {
 
               <Button
                 type="submit"
-                className={cn("w-full")}
+                className={cn(
+                  "w-full",
+                  error && "focus-visible:ring-destructive"
+                )}
                 size="lg"
                 disabled={!email.trim() || !password}
               >
