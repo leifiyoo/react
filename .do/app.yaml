@@ -1,8 +1,11 @@
 name: sample-react
 services:
-- environment_slug: node-js
+- build_command: npm run build
+  environment_slug: node-js
   github:
     branch: main
     deploy_on_push: true
     repo: digitalocean/sample-react
+  http_port: 8080
   name: sample-react
+  run_command: serve -s _static -l tcp://0.0.0.0:$PORT -n
