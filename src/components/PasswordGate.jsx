@@ -12,53 +12,74 @@ import {
   CardTitle,
 } from "./ui/card";
 import { Alert, AlertDescription } from "./ui/alert";
+import { cn } from "../lib/utils";
 
 const CORRECT_PASSWORD = "admin1234";
 
 export default function PasswordGate({ onUnlock }) {
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
-  const [shake, setShake] = useState(false);
 
   function handleSubmit(e) {
     e.preventDefault();
+    if (!email.trim()) {
+      setError("Enter your email to continue.");
+      return;
+    }
+
     if (password === CORRECT_PASSWORD) {
       setError("");
       onUnlock();
     } else {
-      setError("Incorrect password. Please try again.");
-      setShake(true);
+      setError("Invalid email or password. Please try again.");
       setPassword("");
-      setTimeout(() => setShake(false), 500);
     }
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background px-4">
+    <div className="min-h-dvh flex items-center justify-center bg-background px-4 py-6">
       <div className="w-full max-w-sm">
-        {/* Icon */}
-        <div className="flex justify-center mb-6">
+        <div className="mb-6 flex justify-center">
           <div className="rounded-full bg-secondary p-4">
-            <Lock className="w-8 h-8 text-foreground" strokeWidth={1.5} />
+            <Lock
+              className="size-8 text-foreground"
+              strokeWidth={1.5}
+              aria-hidden="true"
+            />
           </div>
         </div>
 
-        <Card className={shake ? "animate-shake" : ""}>
+        <Card>
           <CardHeader className="text-center pb-2">
-            <CardTitle className="text-xl">Password Protected</CardTitle>
-            <CardDescription>
-              Enter the password to access this site.
+            <CardTitle className="text-xl text-balance">
+              Welcome back
+            </CardTitle>
+            <CardDescription className="text-pretty">
+              Sign in with your work email and password to access this site.
             </CardDescription>
           </CardHeader>
 
           <form onSubmit={handleSubmit}>
             <CardContent className="space-y-4 pt-4">
-              {error && (
-                <Alert variant="destructive">
-                  <AlertDescription>{error}</AlertDescription>
-                </Alert>
-              )}
+              <div className="space-y-1.5">
+                <Label htmlFor="email">Email</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  value={email}
+                  onChange={(e) => {
+                    setEmail(e.target.value);
+                    if (error) setError("");
+                  }}
+                  placeholder="you@company.com"
+                  autoComplete="email"
+                  autoFocus
+                  aria-invalid={Boolean(error)}
+                  aria-describedby={error ? "login-error" : undefined}
+                />
+              </div>
 
               <div className="space-y-1.5">
                 <Label htmlFor="password">Password</Label>
@@ -73,50 +94,54 @@ export default function PasswordGate({ onUnlock }) {
                     }}
                     placeholder="Enter password"
                     autoComplete="current-password"
-                    autoFocus
                     className="pr-10"
+                    aria-invalid={Boolean(error)}
+                    aria-describedby={error ? "login-error" : undefined}
                   />
-                  <button
+                  <Button
                     type="button"
                     onClick={() => setShowPassword((v) => !v)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                    variant="ghost"
+                    size="icon"
+                    className="absolute right-1 top-1/2 size-7 -translate-y-1/2"
                     aria-label={showPassword ? "Hide password" : "Show password"}
                   >
                     {showPassword ? (
-                      <EyeOff className="w-4 h-4" />
+                      <EyeOff className="size-4" aria-hidden="true" />
                     ) : (
-                      <Eye className="w-4 h-4" />
+                      <Eye className="size-4" aria-hidden="true" />
                     )}
-                  </button>
+                  </Button>
                 </div>
               </div>
             </CardContent>
 
             <CardFooter className="flex flex-col gap-3">
-              <Button type="submit" className="w-full" size="lg">
-                <ShieldCheck className="w-4 h-4 mr-2" />
-                Unlock
+              {error && (
+                <Alert id="login-error" variant="destructive" aria-live="assertive">
+                  <AlertDescription>{error}</AlertDescription>
+                </Alert>
+              )}
+
+              <Button
+                type="submit"
+                className={cn(
+                  "w-full",
+                  error && "focus-visible:ring-destructive"
+                )}
+                size="lg"
+                disabled={!email.trim() || !password}
+              >
+                <ShieldCheck className="mr-2 size-4" aria-hidden="true" />
+                Sign in
               </Button>
-              <p className="text-xs text-muted-foreground text-center">
+              <p className="text-center text-xs text-muted-foreground text-pretty">
                 Access is restricted to authorized users only.
               </p>
             </CardFooter>
           </form>
         </Card>
       </div>
-
-      <style>{`
-        @keyframes shake {
-          0%, 100% { transform: translateX(0); }
-          20%       { transform: translateX(-8px); }
-          40%       { transform: translateX(8px); }
-          60%       { transform: translateX(-6px); }
-          80%       { transform: translateX(6px); }
-        }
-        .animate-shake {
-          animation: shake 0.45s ease-in-out;
-        }
-      `}</style>
     </div>
   );
 }
